@@ -1,0 +1,81 @@
+{
+  "name": "backstage-deploy",
+  "description": "CLI for Backstage deployment tooling",
+  "version": "0.0.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "backstage": {
+    "role": "cli"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage-deploy",
+    "directory": "src"
+  },
+  "keywords": [
+    "backstage-deploy"
+  ],
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "scripts": {
+    "build": "backstage-cli package build",
+    "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "start": "nodemon --",
+    "tsc:full": "tsc --skipLibCheck false --incremental false",
+    "build:all": "backstage-cli repo build --all",
+    "lint:all": "backstage-cli repo lint"
+  },
+  "bin": "bin/backstage-deploy",
+  "dependencies": {
+    "@backstage/cli-common": "^0.1.12",
+    "@backstage/cli-node": "^0.1.0",
+    "@backstage/errors": "^1.1.5",
+    "@pulumi/aws": "^5.30.0",
+    "@pulumi/awsx": "^1.0.2",
+    "@pulumi/pulumi": "^3.55.0",
+    "chalk": "^4.0.0",
+    "commander": "^10.0.1",
+    "find-process": "^1.4.7",
+    "fs-extra": "^11.1.1",
+    "handlebars": "^4.7.7",
+    "inquirer": "^8.2.0",
+    "minimatch": "^9.0.0",
+    "ora": "^5.3.0",
+    "recursive-readdir": "^2.2.3"
+  },
+  "devDependencies": {
+    "@backstage/cli": "^0.22.6",
+    "@backstage/types": "^1.0.2",
+    "@spotify/eslint-plugin": "^14.1.3",
+    "@types/fs-extra": "^11.0.1",
+    "@types/inquirer": "^9.0.3",
+    "@types/recursive-readdir": "^2.2.1",
+    "eslint": "^8.6.0",
+    "eslint-plugin-notice": "^0.9.10",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-testing-library": "^5.9.1",
+    "typescript": "~5.0.0"
+  },
+  "files": [
+    "bin",
+    "dist/**/*.js",
+    "templates"
+  ],
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/backstage-deploy",
+    "ext": "ts"
+  },
+  "prettier": "@spotify/prettier-config",
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ]
+  },
+  "packageManager": "yarn@3.5.1"
+}
