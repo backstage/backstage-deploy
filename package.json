@@ -25,6 +25,8 @@
     "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
     "start": "nodemon --",
+    "prettier:check": "prettier --check .",
+    "prettier:fix": "prettier --write .",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
     "build:all": "backstage-cli repo build --all",
     "lint:all": "backstage-cli repo lint"
