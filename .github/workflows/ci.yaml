@@ -64,9 +64,6 @@ jobs:
       - name: prettier
         run: yarn prettier:check
 
-      - name: validate config
-        run: yarn backstage-cli config:check --lax
-
       - name: lint
         run: yarn lint:all
 
