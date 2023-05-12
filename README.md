@@ -1,4 +1,4 @@
-# @backstage/deploy
+# backstage-deploy
 
 This packages provides a CLI to help deploy Backstage on a specified cloud provider.
 
