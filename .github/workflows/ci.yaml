@@ -62,7 +62,7 @@ jobs:
       # End of yarn setup
 
       - name: prettier
-        run: yarn prettier --check .
+        run: yarn prettier:check
 
       - name: validate config
         run: yarn backstage-cli config:check --lax
