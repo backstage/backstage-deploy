@@ -29,7 +29,9 @@
     "prettier:fix": "prettier --write .",
     "tsc:full": "tsc --skipLibCheck false --incremental false",
     "build:all": "backstage-cli repo build --all",
-    "lint:all": "backstage-cli repo lint"
+    "lint:all": "backstage-cli repo lint",
+    "prepare": "husky install",
+    "postinstall": "husky install || true"
   },
   "bin": "bin/backstage-deploy",
   "dependencies": {
@@ -61,6 +63,7 @@
     "eslint-plugin-notice": "^0.9.10",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-testing-library": "^5.9.1",
+    "husky": "^8.0.0",
     "prettier": "^2.3.2",
     "typescript": "~5.0.0"
   },
