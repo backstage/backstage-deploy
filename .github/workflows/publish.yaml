@@ -83,8 +83,7 @@ jobs:
 
       - name: publish
         run: |
-            yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
-            yarn npm publish --access public --tolerate-republish    
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
+          yarn npm publish --access public --tolerate-republish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
