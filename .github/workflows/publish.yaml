@@ -1,0 +1,89 @@
+name: publish
+
+on:
+  workflow_call:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+
+    env:
+      CI: true
+      NODE_OPTIONS: --max-old-space-size=4096
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: fetch default branch
+        run: git fetch origin main
+
+      - name: use node.js
+        id: node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+
+      - name: check for duplicated dependencies
+        run: yarn dedupe --check
+
+      # Cache every node_modules folder inside the monorepo
+      - name: cache all node_modules
+        id: cache-modules
+        uses: actions/cache@v3
+        with:
+          path: '**/node_modules'
+          # We use both yarn.lock and package.json as cache keys to ensure that
+          # changes to local monorepo packages bust the cache.
+          key: ${{ runner.os }}-${{ steps.node.outputs.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+
+      # If we get a cache hit for node_modules, there's no need to bring in the global
+      # yarn cache or run yarn install, as all dependencies will be installed already.
+
+      - name: find location of yarn cache
+        id: yarn-cache
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+
+      - name: cache yarn cache
+        uses: actions/cache@v3
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        with:
+          path: ${{ steps.yarn-cache.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
+      - name: yarn install
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: yarn install --immutable
+
+      # End of yarn setup
+
+      - name: prettier
+        run: yarn prettier:check
+
+      - name: lint
+        run: yarn lint:all
+
+      - name: type checking and declarations
+        run: yarn tsc:full
+
+      - name: build all packages
+        run: yarn build:all
+
+      - name: test changed packages
+        # Github action runners have 2 cores by default, and Jest by default
+        # creates one worker per core, less one for the main thread. This
+        # means maxWorkers ends up set to 1, and as a result tests are run
+        # in-band. In this situation, workerIdleMemoryLimit is ignored, so
+        # it's not possible to mitigate issues with test memory usage.
+        #
+        # To mitigate this, we explicitly set maxWorkers to 2 to prevent
+        # tests being run in-band alongside setting a memory limit.
+        run: yarn test --maxWorkers=2
+
+      - name: publish
+        run: |
+          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
+          yarn npm publish --access public --tolerate-republish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
