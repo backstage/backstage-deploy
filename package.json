@@ -33,6 +33,7 @@
     "prepare": "husky install",
     "postinstall": "husky install || true",
     "changeset": "changeset add",
+    "changeset:version": "changeset version",
     "release": "changeset publish"
   },
   "bin": "bin/backstage-deploy",
