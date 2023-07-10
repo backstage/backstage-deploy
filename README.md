@@ -12,4 +12,4 @@ npx backstage-deploy aws --stack backstage-demo
 
 ## Documentation
 
-- [Deploy documentation](https://backstage.io/docs/deployment/pulumi/aws)
+- [Deploy documentation](https://backstage.io/docs/deployment/backstage-deploy/aws-lightsail)
