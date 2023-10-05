@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import fs from 'fs-extra';
 import chalk from 'chalk';
 import * as awsx from '@pulumi/awsx';
 import * as aws from '@pulumi/aws';
@@ -41,8 +42,12 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
 
 export const AWSProgram = (opts: OptionValues) => {
   return async () => {
+    const envFilePath = opts.envFile === true ? './.env' : opts.envFile;
+    const envs = opts.envFile
+      ? (await fs.readFile(envFilePath, 'utf-8')).trim().split('\n')
+      : opts.env;
     const providedEnvironmentVariables = Object.fromEntries(
-      Object.entries(parseOptions(opts.env)).map(([key, value]) => [
+      Object.entries(parseOptions(envs)).map(([key, value]) => [
         key,
         pulumi.secret(value).apply(output => output),
       ]),
