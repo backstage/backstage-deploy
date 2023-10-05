@@ -58,7 +58,12 @@ const main = (argv: string[]) => {
         'power tier of your container service deployment',
       )
         .choices(['nano', 'micro', 'small', 'medium', 'large', 'xlarge'])
-        .defaultValue('small'),
+        .default('small'),
+    )
+    .option(
+      '--env-file [path]',
+      'read environment variables from file',
+      './.env',
     )
     .action(cmd => deploy(cmd));
 
