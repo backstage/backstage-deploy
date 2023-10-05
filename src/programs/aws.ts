@@ -22,11 +22,13 @@ import * as pulumi from '@pulumi/pulumi';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../lib/tasks';
+import { Database } from '@pulumi/aws/lightsail';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
 
   for (const str of optionStrings) {
+    if (str === '') continue;
     const [key] = str.split('=', 1);
     const value = str.slice(key.length + 1);
     if (!key || str[key.length] !== '=') {
@@ -108,6 +110,22 @@ export const AWSProgram = (opts: OptionValues) => {
       ),
     });
 
+    let db: Database | undefined = undefined;
+
+    if (opts.db) {
+      db = new aws.lightsail.Database(`${opts.stack}-database`, {
+        applyImmediately: true,
+        availabilityZone: 'us-east-1a',
+        blueprintId: 'postgres_12',
+        bundleId: 'micro_1_0',
+        masterDatabaseName: 'quickstartdatabase',
+        masterPassword: 'postgres',
+        masterUsername: 'postgres',
+        relationalDatabaseName: `${opts.stack}-database`,
+        skipFinalSnapshot: true,
+      });
+    }
+
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
@@ -122,7 +140,18 @@ export const AWSProgram = (opts: OptionValues) => {
             },
             environment: {
               BACKSTAGE_HOST: containerService.url,
+              APP_CONFIG_app_baseUrl: containerService.url,
               ...providedEnvironmentVariables,
+              ...(opts.db
+                ? {
+                    QUICKSTART_DATABASE_HOST: db?.masterEndpointAddress,
+                    QUICKSTART_DATABASE_PORT: db?.masterEndpointPort.apply(v =>
+                      v.toString(),
+                    ),
+                    QUICKSTART_DATABASE_USER: db?.masterUsername,
+                    QUICKSTART_SECRET_DATABASE_PASSWORD: db?.masterPassword,
+                  }
+                : {}),
             },
           },
         ],

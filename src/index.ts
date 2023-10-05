@@ -37,6 +37,7 @@ const main = (argv: string[]) => {
       'path of dockerfile',
       resolve('./Dockerfile'),
     )
+    .option('--envfile', 'path of your env file', resolve('./env'))
     .option(
       '--create-dockerfile',
       'creates a Dockerfile in the root of the project',
@@ -44,6 +45,7 @@ const main = (argv: string[]) => {
     )
     .option('--stack <name>', 'name of the stack', 'backstage')
     .option('--destroy', 'name of the stack to destroy', false)
+    .option('--db', 'option to include database', false)
     .option('--region <region>', 'region of your aws console', 'us-east-1')
     .option('--skip-build', 'option to skip the tsc and build process', false)
     .option(
