@@ -20,7 +20,7 @@
  * @packageDocumentation
  */
 
-import { program } from 'commander';
+import { Option, program } from 'commander';
 import { exitWithError } from './lib/errors';
 import { version } from '../package.json';
 import { resolve } from 'path';
@@ -51,6 +51,14 @@ const main = (argv: string[]) => {
       'Pass in environment variables to use at run time',
       (env, arr: string[]) => [...arr, env],
       [],
+    )
+    .addOption(
+      new Option(
+        '--power <power>',
+        'power tier of your container service deployment',
+      )
+        .choices(['nano', 'micro', 'small', 'medium', 'large', 'xlarge'])
+        .defaultValue('small'),
     )
     .action(cmd => deploy(cmd));
 

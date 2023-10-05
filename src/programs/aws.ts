@@ -65,7 +65,7 @@ export const AWSProgram = (opts: OptionValues) => {
       {
         name: `${opts.stack}-container-service`,
         isDisabled: false,
-        power: 'nano',
+        power: opts.power,
         scale: 1,
         tags: {
           backstage: opts.stack,
