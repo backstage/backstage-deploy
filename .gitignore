@@ -153,3 +153,7 @@ tsconfig.tmp.json
 # Lighthouse CI Reports
 **/.lighthouseci/*
 !**/.lighthouseci/scripts
+
+# Pulumi
+
+Pulumi.yaml
