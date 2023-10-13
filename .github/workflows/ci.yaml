@@ -59,4 +59,4 @@ jobs:
         #
         # To mitigate this, we explicitly set maxWorkers to 2 to prevent
         # tests being run in-band alongside setting a memory limit.
-        run: pnpm test --maxWorkers=2
+        run: pnpm test -- --maxWorkers=2
