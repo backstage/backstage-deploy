@@ -34,7 +34,8 @@
     "postinstall": "husky install || true",
     "changeset": "changeset add",
     "changeset:version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "pre-commit": "lint-staged"
   },
   "bin": "bin/backstage-deploy",
   "dependencies": {
@@ -84,10 +85,10 @@
   },
   "prettier": "@spotify/prettier-config",
   "lint-staged": {
-    "*.{js,jsx,ts,tsx,mjs,cjs}": [
+    "*.{js,jsx,ts,tsx,mjs,cjs,yaml}": [
       "eslint --fix",
       "prettier --write"
     ]
   },
-  "packageManager": "yarn@3.5.1"
+  "packageManager": "pnpm@8.9.0"
 }

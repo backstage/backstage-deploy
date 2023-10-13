@@ -24,7 +24,7 @@ jobs:
           node-version-file: .nvmrc
 
       - name: check for duplicated dependencies
-        run: yarn dedupe --check
+        run: pnpm dedupe --check
 
       # Cache every node_modules folder inside the monorepo
       - name: cache all node_modules
@@ -32,44 +32,44 @@ jobs:
         uses: actions/cache@v3
         with:
           path: '**/node_modules'
-          # We use both yarn.lock and package.json as cache keys to ensure that
+          # We use both pnpm.lock.yaml and package.json as cache keys to ensure that
           # changes to local monorepo packages bust the cache.
-          key: ${{ runner.os }}-${{ steps.node.outputs.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
+          key: ${{ runner.os }}-${{ steps.node.outputs.node-version }}-node_modules-${{ hashFiles('pnpm.lock.yaml', '**/package.json') }}
 
       # If we get a cache hit for node_modules, there's no need to bring in the global
-      # yarn cache or run yarn install, as all dependencies will be installed already.
+      # pnpm cache or run pnpm install, as all dependencies will be installed already.
 
-      - name: find location of yarn cache
-        id: yarn-cache
+      - name: find location of pnpm cache
+        id: pnpm-cache
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
+        run: echo "dir=$(pnpm config get cacheFolder)" >> $GITHUB_OUTPUT
 
-      - name: cache yarn cache
+      - name: cache pnpm cache
         uses: actions/cache@v3
         if: steps.cache-modules.outputs.cache-hit != 'true'
         with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          path: ${{ steps.pnpm-cache.outputs.dir }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm.lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-
 
-      - name: yarn install
+      - name: pnpm install
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        run: pnpm install --immutable
 
-      # End of yarn setup
+      # End of pnpm setup
 
       - name: prettier
-        run: yarn prettier:check
+        run: pnpm prettier:check
 
       - name: lint
-        run: yarn lint:all
+        run: pnpm lint:all
 
       - name: type checking and declarations
-        run: yarn tsc:full
+        run: pnpm tsc:full
 
       - name: build all packages
-        run: yarn build:all
+        run: pnpm build:all
 
       - name: test changed packages
         # Github action runners have 2 cores by default, and Jest by default
@@ -80,11 +80,11 @@ jobs:
         #
         # To mitigate this, we explicitly set maxWorkers to 2 to prevent
         # tests being run in-band alongside setting a memory limit.
-        run: yarn test --maxWorkers=2
+        run: pnpm test --maxWorkers=2
 
       - name: publish
         run: |
-          yarn config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
-          yarn npm publish --access public --tolerate-republish
+          pnpm config set -H 'npmAuthToken' "${{secrets.NPM_TOKEN}}"
+          pnpm npm publish --access public --tolerate-republish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
