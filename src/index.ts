@@ -65,6 +65,8 @@ const main = (argv: string[]) => {
       'read environment variables from file',
       './.env',
     )
+    .option('--with-db', 'Deploy a Backstage instance with a database', false)
+    .option('--quickstart', 'Deploys a quickstart instance', false)
     .action(cmd => deploy(cmd));
 
   program.parse(argv);
