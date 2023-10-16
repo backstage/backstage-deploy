@@ -22,6 +22,7 @@ import * as pulumi from '@pulumi/pulumi';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../lib/tasks';
+import { Database } from '@pulumi/aws/lightsail';
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -62,6 +63,27 @@ export const AWSProgram = (opts: OptionValues) => {
       path: resolve('.'),
       dockerfile: opts.dockerfile,
     });
+
+    let db: Database | undefined = undefined;
+    if (opts.withDb || opts.quickstart) {
+      const DB_ENV_NAME = opts.quickstart
+        ? 'QUICKSTART_SECRET_DATABASE_PASSWORD'
+        : 'DATABASE_PASSWORD';
+      if (!providedEnvironmentVariables[DB_ENV_NAME]) {
+        throw new Error(`Environment variable ${DB_ENV_NAME} is not set`);
+      }
+      db = new aws.lightsail.Database(`${opts.stack}-database`, {
+        applyImmediately: true,
+        availabilityZone: opts.availabilityZone ?? 'us-east-1a',
+        blueprintId: 'postgres_12',
+        bundleId: 'micro_1_0',
+        masterDatabaseName: `${opts.stack}`,
+        masterPassword: providedEnvironmentVariables[DB_ENV_NAME],
+        masterUsername: 'postgres',
+        relationalDatabaseName: `${opts.stack}`,
+        skipFinalSnapshot: true,
+      });
+    }
 
     // create lightsail instance
     const CONTAINER_NAME = `${opts.stack}-container`;
@@ -108,6 +130,23 @@ export const AWSProgram = (opts: OptionValues) => {
       ),
     });
 
+    const DB_ENVS: Record<string, pulumi.Output<string> | undefined> =
+      opts.quickstart
+        ? {
+            QUICKSTART_DATABASE_HOST: db?.masterEndpointAddress,
+            QUICKSTART_DATABASE_PORT: db?.masterEndpointPort.apply(v =>
+              v.toString(),
+            ),
+            QUICKSTART_DATABASE_USER: db?.masterUsername,
+            QUICKSTART_SECRET_DATABASE_PASSWORD: db?.masterPassword,
+          }
+        : {
+            DATABASE_HOST: db?.masterEndpointAddress,
+            DATABASE_PORT: db?.masterEndpointPort.apply(v => v.toString()),
+            DATABASE_USER: db?.masterUsername,
+            DATABASE_PASSWORD: db?.masterPassword,
+          };
+
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
@@ -121,8 +160,15 @@ export const AWSProgram = (opts: OptionValues) => {
               '7007': 'HTTP',
             },
             environment: {
-              BACKSTAGE_HOST: containerService.url,
+              ...(opts.quickstart
+                ? {
+                    APP_CONFIG_app_baseUrl: containerService.url,
+                  }
+                : {
+                    BACKSTAGE_HOST: containerService.url,
+                  }),
               ...providedEnvironmentVariables,
+              ...(opts.withDb || opts.quickstart ? DB_ENVS : {}),
             },
           },
         ],

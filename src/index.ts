@@ -60,11 +60,36 @@ const main = (argv: string[]) => {
         .choices(['nano', 'micro', 'small', 'medium', 'large', 'xlarge'])
         .default('small'),
     )
+    .addOption(
+      new Option(
+        '--availabilityZone <availabilityZone>',
+        'Availability zone of your database',
+      )
+        .choices([
+          'eu-central-1a',
+          'eu-west-1a',
+          'eu-west-2a',
+          'eu-west-3a',
+          'eu-north-1a',
+          'ap-south-1a',
+          'ca-central-1a',
+          'us-east-1a',
+          'us-east-2a',
+          'ap-southeast-1a',
+          'app-southeast-2a',
+          'ap-northeast-1a',
+          'us-west-2a',
+          'ap-southeast-2a',
+        ])
+        .default('us-east-1a'),
+    )
     .option(
       '--env-file [path]',
       'read environment variables from file',
       './.env',
     )
+    .option('--with-db', 'Deploy a Backstage instance with a database', false)
+    .option('--quickstart', 'Deploys a quickstart instance', false)
     .action(cmd => deploy(cmd));
 
   program.parse(argv);
