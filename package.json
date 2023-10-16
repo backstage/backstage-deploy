@@ -34,7 +34,8 @@
     "postinstall": "husky install || true",
     "changeset": "changeset add",
     "changeset:version": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "pre-commit": "lint-staged"
   },
   "bin": "bin/backstage-deploy",
   "dependencies": {
@@ -87,7 +88,10 @@
     "*.{js,jsx,ts,tsx,mjs,cjs}": [
       "eslint --fix",
       "prettier --write"
+    ],
+    "*.{json,md,yaml}": [
+      "prettier --write"
     ]
   },
-  "packageManager": "yarn@3.5.1"
+  "packageManager": "pnpm@8.9.0"
 }

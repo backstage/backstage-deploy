@@ -16,6 +16,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.9.0
+          run_install: false
       - name: fetch default branch
         run: git fetch origin main
 
@@ -23,55 +27,42 @@ jobs:
         id: node
         uses: actions/setup-node@v3
         with:
+          cache: 'pnpm'
           node-version-file: .nvmrc
 
-      - name: check for duplicated dependencies
-        run: yarn dedupe --check
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      # Cache every node_modules folder inside the monorepo
-      - name: cache all node_modules
-        id: cache-modules
-        uses: actions/cache@v3
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
         with:
-          path: '**/node_modules'
-          # We use both yarn.lock and package.json as cache keys to ensure that
-          # changes to local monorepo packages bust the cache.
-          key: ${{ runner.os }}-${{ steps.node.outputs.node-version }}-node_modules-${{ hashFiles('yarn.lock', '**/package.json') }}
-
-      # If we get a cache hit for node_modules, there's no need to bring in the global
-      # yarn cache or run yarn install, as all dependencies will be installed already.
-
-      - name: find location of yarn cache
-        id: yarn-cache
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: echo "dir=$(yarn config get cacheFolder)" >> $GITHUB_OUTPUT
-
-      - name: cache yarn cache
-        uses: actions/cache@v3
-        if: steps.cache-modules.outputs.cache-hit != 'true'
-        with:
-          path: ${{ steps.yarn-cache.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('yarn.lock') }}
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-
+            ${{ runner.os }}-pnpm-store-
 
-      - name: yarn install
+      - name: check for duplicated dependencies
+        run: pnpm dedupe --check
+
+      - name: pnpm install
         if: steps.cache-modules.outputs.cache-hit != 'true'
-        run: yarn install --immutable
+        run: pnpm i
 
-      # End of yarn setup
+      # End of pnpm setup
 
       - name: prettier
-        run: yarn prettier:check
+        run: pnpm prettier:check
 
       - name: lint
-        run: yarn lint:all
+        run: pnpm lint:all
 
       - name: type checking and declarations
-        run: yarn tsc:full
+        run: pnpm tsc:full
 
       - name: build all packages
-        run: yarn build:all
+        run: pnpm build:all
 
       - name: test changed packages
         # Github action runners have 2 cores by default, and Jest by default
@@ -82,4 +73,4 @@ jobs:
         #
         # To mitigate this, we explicitly set maxWorkers to 2 to prevent
         # tests being run in-band alongside setting a memory limit.
-        run: yarn test --maxWorkers=2
+        run: pnpm test -- --maxWorkers=2
