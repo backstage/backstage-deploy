@@ -74,13 +74,13 @@ export const AWSProgram = (opts: OptionValues) => {
       }
       db = new aws.lightsail.Database(`${opts.stack}-database`, {
         applyImmediately: true,
-        availabilityZone: opts.region,
+        availabilityZone: opts.availabilityZone ?? 'us-east-1a',
         blueprintId: 'postgres_12',
         bundleId: 'micro_1_0',
-        masterDatabaseName: `${opts.stack}-database`,
+        masterDatabaseName: `${opts.stack}`,
         masterPassword: providedEnvironmentVariables[DB_ENV_NAME],
         masterUsername: 'postgres',
-        relationalDatabaseName: `${opts.stack}-database`,
+        relationalDatabaseName: `${opts.stack}`,
         skipFinalSnapshot: true,
       });
     }
@@ -160,9 +160,15 @@ export const AWSProgram = (opts: OptionValues) => {
               '7007': 'HTTP',
             },
             environment: {
-              BACKSTAGE_HOST: containerService.url,
+              ...(opts.quickstart
+                ? {
+                    APP_CONFIG_app_baseUrl: containerService.url,
+                  }
+                : {
+                    BACKSTAGE_HOST: containerService.url,
+                  }),
               ...providedEnvironmentVariables,
-              ...(opts.db ? DB_ENVS : {}),
+              ...(opts.withDb || opts.quickstart ? DB_ENVS : {}),
             },
           },
         ],
