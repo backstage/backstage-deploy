@@ -68,7 +68,8 @@ export default async (opts: OptionValues) => {
     );
   }
 
-  if (!opts.skipBuild && !opts.destroy) {
+  const shouldBuildApp = !opts.skipBuild && !opts.destroy && !opts.quickstart;
+  if (shouldBuildApp) {
     // run yarn tsc & yarn build for Dockerfile
     Task.section(`Building app`);
     await buildApp();
