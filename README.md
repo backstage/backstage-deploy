@@ -1,6 +1,6 @@
 # backstage-deploy
 
-This packages provides a CLI to help deploy Backstage on a specified cloud provider.
+This package provides a CLI to help deploy Backstage on a specified cloud provider. It uses [Pulumi](https://www.pulumi.com) internally to create the requires resources.
 
 ## Usage
 
@@ -18,7 +18,7 @@ npx backstage-deploy aws --stack backstage-demo
 
 `backstage-deploy` doesn't use Yarn but PNPM. Please refer to the [install documentation](https://pnpm.io/installation).
 
-After installed, run this command to install the dependencies:
+After installation, run this command to install the dependencies:
 
 ```sh
 pnpm i
