@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:16-bullseye-slim
+FROM --platform=linux/amd64 node:18-bullseye-slim
 
 # Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
 # in which case you should also move better-sqlite3 to "devDependencies" in package.json.
