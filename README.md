@@ -1,6 +1,6 @@
 # backstage-deploy
 
-This package provides a CLI to help deploy Backstage on a specified cloud provider. It uses [Pulumi](https://www.pulumi.com) internally to create the requires resources.
+This package provides a CLI to help deploy Backstage on a specified cloud provider. It uses [Pulumi](https://www.pulumi.com) internally to create the required resources.
 
 ## Usage
 
