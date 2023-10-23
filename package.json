@@ -44,6 +44,8 @@
     "@backstage/errors": "^1.1.5",
     "@pulumi/aws": "^5.30.0",
     "@pulumi/awsx": "^1.0.2",
+    "@pulumi/command": "^0.9.1",
+    "@pulumi/docker": "^4.4.4",
     "@pulumi/pulumi": "^3.55.0",
     "chalk": "^4.0.0",
     "commander": "^10.0.1",

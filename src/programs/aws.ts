@@ -19,10 +19,21 @@ import chalk from 'chalk';
 import * as awsx from '@pulumi/awsx';
 import * as aws from '@pulumi/aws';
 import * as pulumi from '@pulumi/pulumi';
+import * as docker from '@pulumi/docker';
 import { OptionValues } from 'commander';
 import { resolve } from 'path';
 import { Task } from '../lib/tasks';
 import { Database } from '@pulumi/aws/lightsail';
+import { local } from '@pulumi/command';
+import { Output } from '@pulumi/pulumi';
+
+function GetValue<T>(output: Output<T>) {
+  return new Promise<T>((resolveP, reject) => {
+    output.apply(value => {
+      resolveP(value);
+    });
+  });
+}
 
 function parseOptions(optionStrings: string[]): Record<string, string> {
   const options: Record<string, string> = {};
@@ -53,16 +64,32 @@ export const AWSProgram = (opts: OptionValues) => {
         pulumi.secret(value).apply(output => output),
       ]),
     );
+
     const repository = new awsx.ecr.Repository(`${opts.stack}`, {
       name: opts.stack,
       forceDelete: true,
     });
 
-    const image = new awsx.ecr.Image(`${opts.stack}-image`, {
-      repositoryUrl: repository.url,
-      path: resolve('.'),
-      dockerfile: opts.dockerfile,
-    });
+    let image: awsx.ecr.Image | undefined = undefined;
+    if (opts.imageUri) {
+      Task.log('Tagging existing image');
+      // eslint-disable-next-line no-new
+      new docker.Tag(`${opts.stack}-tag`, {
+        sourceImage: opts.imageUri,
+        targetImage: repository.url,
+      });
+      const repositoryUrl = await GetValue(repository.url);
+      // eslint-disable-next-line no-new
+      new local.Command('docker push', {
+        create: `docker push ${repositoryUrl}`,
+      });
+    } else {
+      image = new awsx.ecr.Image(`${opts.stack}-image`, {
+        repositoryUrl: repository.url,
+        path: resolve('.'),
+        dockerfile: opts.dockerfile,
+      });
+    }
 
     let db: Database | undefined = undefined;
     if (opts.withDb || opts.quickstart) {
@@ -154,7 +181,7 @@ export const AWSProgram = (opts: OptionValues) => {
         containers: [
           {
             containerName: CONTAINER_NAME,
-            image: image.imageUri,
+            image: image!.imageUri,
             commands: [],
             ports: {
               '7007': 'HTTP',
