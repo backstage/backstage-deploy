@@ -28,7 +28,7 @@ import { local } from '@pulumi/command';
 import { Output } from '@pulumi/pulumi';
 
 function GetValue<T>(output: Output<T>) {
-  return new Promise<T>((resolveP, reject) => {
+  return new Promise<T>(resolveP => {
     output.apply(value => {
       resolveP(value);
     });
@@ -181,7 +181,7 @@ export const AWSProgram = (opts: OptionValues) => {
         containers: [
           {
             containerName: CONTAINER_NAME,
-            image: image!.imageUri,
+            image: image ? image.imageUri : repository.url,
             commands: [],
             ports: {
               '7007': 'HTTP',
