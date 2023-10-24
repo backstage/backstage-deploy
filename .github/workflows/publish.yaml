@@ -74,6 +74,6 @@ jobs:
       - name: publish
         run: |
           echo "${{secrets.NPM_TOKEN}}" >> .npmrc
-          pnpm publish --no-git-checks
+          pnpm npm publish --access public --tolerate-republish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
