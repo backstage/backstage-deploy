@@ -84,6 +84,13 @@ export const AWSProgram = (opts: OptionValues) => {
         create: `docker push ${repositoryUrl}`,
       });
     } else {
+      if (!fs.existsSync(opts.dockerfile)) {
+        throw new Error(
+          `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one, --dockerfile to 
+          pass in the path of an existing Dockerfile, or use --image-uri to use an existing image instead of building one.`,
+        );
+      }
+
       image = new awsx.ecr.Image(`${opts.stack}-image`, {
         repositoryUrl: repository.url,
         path: resolve('.'),
