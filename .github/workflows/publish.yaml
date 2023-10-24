@@ -73,7 +73,7 @@ jobs:
 
       - name: publish
         run: |
-          pnpm config set npmAuthToken "${{secrets.NPM_TOKEN}}"
+          echo "${{secrets.NPM_TOKEN}}" >> .npmrc 
           pnpm publish --force
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
