@@ -71,9 +71,13 @@ jobs:
         # tests being run in-band alongside setting a memory limit.
         run: pnpm test -- --maxWorkers=2
 
+      - name: Set publishing config
+        run: pnpm config set '//registry.npmjs.org/:_authToken' "${NODE_AUTH_TOKEN}"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
       - name: publish
         run: |
-          echo "npmAuthToken=${{secrets.NPM_TOKEN}}" >> .npmrc
-          pnpm npm publish --access public --tolerate-republish
+          pnpm publish --access=public --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
