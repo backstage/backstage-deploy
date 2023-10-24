@@ -41,7 +41,10 @@ function parseOptions(optionStrings: string[]): Record<string, string> {
   for (const str of optionStrings) {
     const [key] = str.split('=', 1);
     const value = str.slice(key.length + 1);
-    if (!key || str[key.length] !== '=') {
+    if (!key) {
+      continue;
+    }
+    if (str[key.length] !== '=') {
       throw new Error(
         `Invalid option '${str}', must be of the format <key>=<value>`,
       );
@@ -56,7 +59,7 @@ export const AWSProgram = (opts: OptionValues) => {
   return async () => {
     const envFilePath = opts.envFile === true ? './.env' : opts.envFile;
     const envs = opts.envFile
-      ? (await fs.readFile(envFilePath, 'utf-8')).trim().split('\n')
+      ? (await fs.readFile(envFilePath, 'utf-8')).split('\n')
       : opts.env;
     const providedEnvironmentVariables = Object.fromEntries(
       Object.entries(parseOptions(envs)).map(([key, value]) => [
