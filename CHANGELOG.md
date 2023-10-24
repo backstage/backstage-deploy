@@ -1,5 +1,13 @@
 # backstage-deploy
 
+## 0.3.0
+
+### Minor Changes
+
+- - Added support for `--image-uri` flag
+  - Added support for `--with-db` flag
+  - Added support for `--quickstart` flag
+
 ## 0.2.0
 
 ### Minor Changes
