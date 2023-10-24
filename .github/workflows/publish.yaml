@@ -73,7 +73,7 @@ jobs:
 
       - name: publish
         run: |
-          echo "${{secrets.NPM_TOKEN}}" >> .npmrc 
-          pnpm publish --force
+          echo "${{secrets.NPM_TOKEN}}" >> .npmrc
+          pnpm publish --no-git-checks
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
