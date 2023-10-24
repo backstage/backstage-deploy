@@ -62,12 +62,6 @@ export default async (opts: OptionValues) => {
     }
   }
 
-  if (!fs.existsSync(opts.dockerfile)) {
-    throw new Error(
-      `Didn't find a Dockerfile at ${opts.dockerfile}. Use --create-dockerfile to create one or use --dockerfile to pass in the path of your Dockerfile.`,
-    );
-  }
-
   const shouldBuildApp = !opts.skipBuild && !opts.destroy && !opts.quickstart;
   if (shouldBuildApp) {
     // run yarn tsc & yarn build for Dockerfile
