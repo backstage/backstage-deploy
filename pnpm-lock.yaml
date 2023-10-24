@@ -22,6 +22,12 @@ importers:
       '@pulumi/awsx':
         specifier: ^1.0.2
         version: 1.0.2
+      '@pulumi/command':
+        specifier: ^0.9.1
+        version: 0.9.1
+      '@pulumi/docker':
+        specifier: ^4.4.4
+        version: 4.4.4
       '@pulumi/pulumi':
         specifier: ^3.55.0
         version: 3.67.0
@@ -3879,12 +3885,36 @@ packages:
       - supports-color
     dev: false
 
+  /@pulumi/command@0.9.1:
+    resolution:
+      {
+        integrity: sha512-0QVj0N02FOZRv/DrEPEx//wfMI6Iv2gatPj0s6ue5LpmhXXjLuOC/TBnpcTq1DqB9/uc3sCLafqXdJSdFzbt9g==,
+      }
+    requiresBuild: true
+    dependencies:
+      '@pulumi/pulumi': 3.67.0
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
   /@pulumi/docker@3.6.1:
     resolution:
       {
         integrity: sha512-BZME50QkT556v+LvmTXPT8ssB2xxNkp9+msB5xYFEnUnWcdGAx5yUysQw70RJCb+U0GbkJSbxtlgMJgOQf/now==,
       }
     requiresBuild: true
+    dependencies:
+      '@pulumi/pulumi': 3.67.0
+      semver: 5.7.2
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
+
+  /@pulumi/docker@4.4.4:
+    resolution:
+      {
+        integrity: sha512-CuW5UAI+mZWJqD3ZKEv74ReWu/jCpoJKyXpjtp3m4I+bWoOoOfg7jUGoJnwLODQPnrmlawOviNa0TzMR5WdXaQ==,
+      }
     dependencies:
       '@pulumi/pulumi': 3.67.0
       semver: 5.7.2
