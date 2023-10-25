@@ -85,6 +85,7 @@ export const AWSProgram = (opts: OptionValues) => {
       // eslint-disable-next-line no-new
       new local.Command('docker push', {
         create: `docker push ${repositoryUrl}`,
+        update: `docker push ${repositoryUrl}`,
       });
     } else {
       if (!fs.existsSync(opts.dockerfile)) {
