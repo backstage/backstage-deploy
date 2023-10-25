@@ -1,5 +1,12 @@
 # backstage-deploy
 
+## 0.3.1
+
+### Patch Changes
+
+- Also pushes Docker image in pulumi update phase
+- Change NodeJS base docker image
+
 ## 0.3.0
 
 ### Minor Changes

@@ -1,7 +1,7 @@
 {
   "name": "backstage-deploy",
   "description": "CLI for Backstage deployment tooling",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "publishConfig": {
     "access": "public"
   },
