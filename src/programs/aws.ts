@@ -186,6 +186,7 @@ export const AWSProgram = (opts: OptionValues) => {
           };
 
     /* eslint-disable no-new */
+    const CONTAINER_SERVICE_URL = containerService.url.endsWith("/") ? containerService.url.slice(0, -1) : containerService.url
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
       {
@@ -203,7 +204,7 @@ export const AWSProgram = (opts: OptionValues) => {
                     APP_CONFIG_app_baseUrl: containerService.url,
                   }
                 : {
-                    BACKSTAGE_HOST: containerService.url,
+                    BACKSTAGE_HOST: CONTAINER_SERVICE_URL,
                   }),
               ...providedEnvironmentVariables,
               ...(opts.withDb || opts.quickstart ? DB_ENVS : {}),
