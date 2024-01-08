@@ -185,9 +185,9 @@ export const AWSProgram = (opts: OptionValues) => {
             DATABASE_PASSWORD: db?.masterPassword,
           };
 
-    const CONTAINER_SERVICE_URL = containerService.url.endsWith('/')
-      ? containerService.url.slice(0, -1)
-      : containerService.url;
+    const CONTAINER_SERVICE_URL = containerService.url.apply(url =>
+      url.endsWith('/') ? url.slice(0, -1) : url,
+    );
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
       `${opts.stack}-deployment`,
