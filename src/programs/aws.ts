@@ -186,7 +186,7 @@ export const AWSProgram = (opts: OptionValues) => {
           };
 
     const CONTAINER_SERVICE_URL = containerService.url.apply(url =>
-      url.endsWith('/') ? url.slice(0, -1) : url
+      url.endsWith('/') ? url.slice(0, -1) : url,
     );
     /* eslint-disable no-new */
     new aws.lightsail.ContainerServiceDeploymentVersion(
