@@ -37,4 +37,4 @@ RUN echo "techdocs:" >> app-config.deployment.yaml
 RUN echo "    generator:" >> app-config.deployment.yaml
 RUN echo "        runIn: 'local'" >> app-config.deployment.yaml
 
-CMD ["node", "packages/backend", "--config",  "app-config.deployment.yaml", "--config", "app-config.yaml"]
+CMD ["node", "packages/backend", "--config",  "app-config.yaml", "--config", "app-config.deployment.yaml"]
