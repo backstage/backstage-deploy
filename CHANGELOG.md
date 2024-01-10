@@ -1,5 +1,10 @@
 # backstage-deploy
 
+## 0.3.2
+
+- Remove trailing slash in container service host url if present
+- Change config merge in Dockerfile template
+
 ## 0.3.1
 
 ### Patch Changes
