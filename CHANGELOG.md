@@ -1,5 +1,11 @@
 # backstage-deploy
 
+## 0.4.0
+
+### Minor Changes
+
+- Remove all related quickstart functionality. Please refer to the [PR](https://github.com/backstage/backstage-deploy/pull/35) for more information.
+
 ## 0.3.2
 
 - Remove trailing slash in container service host url if present
