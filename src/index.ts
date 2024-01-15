@@ -89,7 +89,6 @@ const main = (argv: string[]) => {
       './.env',
     )
     .option('--with-db', 'Deploy a Backstage instance with a database', false)
-    .option('--quickstart', 'Deploys a quickstart instance', false)
     .option('--image-uri <image-uri>', 'Url of Docker image')
     .action(cmd => deploy(cmd));
 

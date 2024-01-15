@@ -103,10 +103,8 @@ export const AWSProgram = (opts: OptionValues) => {
     }
 
     let db: Database | undefined = undefined;
-    if (opts.withDb || opts.quickstart) {
-      const DB_ENV_NAME = opts.quickstart
-        ? 'QUICKSTART_SECRET_DATABASE_PASSWORD'
-        : 'DATABASE_PASSWORD';
+    if (opts.withDb) {
+      const DB_ENV_NAME = 'DATABASE_PASSWORD';
       if (!providedEnvironmentVariables[DB_ENV_NAME]) {
         throw new Error(`Environment variable ${DB_ENV_NAME} is not set`);
       }
@@ -168,22 +166,12 @@ export const AWSProgram = (opts: OptionValues) => {
       ),
     });
 
-    const DB_ENVS: Record<string, pulumi.Output<string> | undefined> =
-      opts.quickstart
-        ? {
-            QUICKSTART_DATABASE_HOST: db?.masterEndpointAddress,
-            QUICKSTART_DATABASE_PORT: db?.masterEndpointPort.apply(v =>
-              v.toString(),
-            ),
-            QUICKSTART_DATABASE_USER: db?.masterUsername,
-            QUICKSTART_SECRET_DATABASE_PASSWORD: db?.masterPassword,
-          }
-        : {
-            DATABASE_HOST: db?.masterEndpointAddress,
-            DATABASE_PORT: db?.masterEndpointPort.apply(v => v.toString()),
-            DATABASE_USER: db?.masterUsername,
-            DATABASE_PASSWORD: db?.masterPassword,
-          };
+    const DB_ENVS: Record<string, pulumi.Output<string> | undefined> = {
+      DATABASE_HOST: db?.masterEndpointAddress,
+      DATABASE_PORT: db?.masterEndpointPort.apply(v => v.toString()),
+      DATABASE_USER: db?.masterUsername,
+      DATABASE_PASSWORD: db?.masterPassword,
+    };
 
     const containerServiceUrl = containerService.url.apply(url =>
       url.endsWith('/') ? url.slice(0, -1) : url,
@@ -202,15 +190,9 @@ export const AWSProgram = (opts: OptionValues) => {
               '7007': 'HTTP',
             },
             environment: {
-              ...(opts.quickstart
-                ? {
-                    APP_CONFIG_app_baseUrl: containerService.url,
-                  }
-                : {
-                    BACKSTAGE_HOST: containerServiceUrl,
-                  }),
+              BACKSTAGE_HOST: containerServiceUrl,
               ...providedEnvironmentVariables,
-              ...(opts.withDb || opts.quickstart ? DB_ENVS : {}),
+              ...(opts.withDb ? DB_ENVS : {}),
             },
           },
         ],
